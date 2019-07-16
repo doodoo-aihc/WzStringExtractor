@@ -27,11 +27,13 @@ namespace WzStringExtractor
                 {
                     if (test.Name == "name")
                     {
-                        Console.WriteLine(test.ValueOrDie<String>());
-                        Console.WriteLine(item.Name);
+                        if (test.ValueOrDie<String>().Contains("Damage Skin"))
+                        {
+                            Console.WriteLine(test.ValueOrDie<String>());
+                            Console.WriteLine(item.Name);
+                        }
                     }
                 }
-
             }
 
             //WZStringProperty property = xz.ResolvePath("Consume.img/2000002/name").ValueOrDie<WZStringProperty>();
