@@ -66,6 +66,11 @@ namespace WzStringExtractor
                                 string path = test["_outlink"].ValueOrDie<string>();
                                 path = path.Substring(path.IndexOf('/') + 1);
                                 dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                            } else if (test.HasChild("_inlink"))
+                            {
+                                string path = test["_inlink"].ValueOrDie<string>();
+                                string[] pathList = path.Split('/');
+                                dmgSkinPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
                             } else
                             {
                                 dmgSkinPng = test.Value;
