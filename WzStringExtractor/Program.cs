@@ -18,22 +18,38 @@ namespace WzStringExtractor
     {
         static void Main(string[] args)
         {
-            //WZFile xz = new WZFile(@"F:\MapleStorySEA\String.wz", WZVariant.MSEA, true, WZReadSelection.EagerParseStrings);
-            //WZStringProperty property = xz.ResolvePath("Consume.img/2000002/name").ValueOrDie<WZStringProperty>();
-            //Console.Write(property);
-            WzFile file = new WzFile($@"F:\MapleStorySEA\String.wz", 187, WzMapleVersion.GETFROMZLZ);
-            file.ParseWzFile();
+            WZFile xz = new WZFile(@"D:\Program Files (x86)\MapleStorySEA\String.wz", WZVariant.Classic, true, WZReadSelection.EagerParseStrings);
+            WZObject consume = (WZObject)xz.MainDirectory["Consume.img"];
 
-            file.WzDirectory.ParseImages();
-
-            foreach (var item in file.WzDirectory.WzImages)
+            foreach (var item in consume)
             {
-                item.ParseImage(true);
-                Console.WriteLine(item.Name);
+                foreach (var test in item)
+                {
+                    if (test.Name == "name")
+                    {
+                        Console.WriteLine(test.ValueOrDie<String>());
+                        Console.WriteLine(item.Name);
+                    }
+                }
+
             }
 
+            //WZStringProperty property = xz.ResolvePath("Consume.img/2000002/name").ValueOrDie<WZStringProperty>();
+            //Console.Write(property);
+            //WzFile file = new WzFile($@"D:\Program Files (x86)\MapleStorySEA\String.wz", 187, WzMapleVersion.CLASSIC);
+            //file.ParseWzFile();
 
-            //var test = file.GetObjectFromPath("Consume.img");
+            ////file.WzDirectory.ParseImages();
+
+            //foreach (var item in file.WzDirectory.WzImages)
+            //{
+            //    //item.ParseImage(true);
+            //    WzObject test = file.GetObjectFromPath("Consume.img");
+            //    Console.WriteLine(item.Name);
+            //}
+
+
+            ////var test = file.GetObjectFromPath("Consume.img");
             Console.Write("test");
             Console.ReadKey();
         }
