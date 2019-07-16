@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using MapleLib.WzLib;
-//using MapleLib.MapleCryptoLib;
-//using MapleLib.Helpers;
-//using MapleLib.PacketLib;
-//using MapleLib.WzLib.Util;
-//using MapleLib.WzLib.WzProperties;
+using MapleLib.WzLib;
+using MapleLib.MapleCryptoLib;
+using MapleLib.Helpers;
+using MapleLib.PacketLib;
+using MapleLib.WzLib.Util;
+using MapleLib.WzLib.WzProperties;
 using reWZ;
 using reWZ.WZProperties;
 using Newtonsoft.Json;
@@ -24,29 +24,52 @@ namespace WzStringExtractor
         {
             int count = 0;
             var dmgSkins = JsonConvert.DeserializeObject<List<DamageSkin>>(File.ReadAllText(@"F:\Bots\workspace\187MSEA_DmgSkin.json"));
-            WZFile xz = new WZFile(@"F:\MapleStorySEA\Item.wz", WZVariant.Classic, true);
-            WZImage dmgSkinImg = (WZImage) xz.MainDirectory["Consume"]["0243.img"];
 
-            foreach (var itemImg in dmgSkinImg)
+            WzFile f = new WzFile(@"F:\MapleStorySEA\Item.wz", WzMapleVersion.CLASSIC);
+            f.ParseWzFile();
+            //f.GetObjectsFromRegexPath("Consume/0243.img")
+            WzDirectory dmgSkinDir = (WzDirectory)f.WzDirectory.WzDirectories.FirstOrDefault(x => x.Name == "Consume");
+            WzImage dmgSkinImg = dmgSkinDir.WzImages.FirstOrDefault(x => x.Name == "0243.img");
+
+            foreach (var item in dmgSkinImg.WzProperties)
             {
                 foreach (var jsonDmg in dmgSkins)
                 {
-                    //Console.Write("debug");
                     string itemId = "0" + jsonDmg.itemId;
-                    if (itemImg.Name == itemId)
+                    if (item.Name == itemId)
                     {
-                        if (itemImg["info"].HasChild("sample")) {
-                            Bitmap dmgSkinPng = itemImg["info"]["sample"].ValueOrDefault<Bitmap>(null);
-                            dmgSkinPng.Save($@"F:\Bots\workspace\dmgskin\{itemId}.png", ImageFormat.Png);
-                            Console.WriteLine("done");
-                            count++;
-                        }
+                        Bitmap test = item.WzProperties.FirstOrDefault(x => x.Name == "info").WzProperties.FirstOrDefault(x => x.Name == "sample").GetBitmap();
+                        test.Save($@"F:\Bots\workspace\dmgskin\{itemId}.png", ImageFormat.Png);
+                        Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
+                        Console.Write("test");
                     }
                 }
             }
-            Console.WriteLine("Count: " + count.ToString());
-            Console.WriteLine("test");
-            Console.ReadKey();
+            
+            //WZFile xz = new WZFile(@"F:\MapleStorySEA\Item.wz", WZVariant.MSEA, false);
+            //WZImage dmgSkinImg = (WZImage) xz.MainDirectory["Consume"]["0243.img"];
+
+            //foreach (var itemImg in dmgSkinImg)
+            //{
+            //    foreach (var jsonDmg in dmgSkins)
+            //    {
+            //        //Console.Write("debug");
+            //        string itemId = "0" + jsonDmg.itemId;
+            //        if (itemImg.Name == itemId)
+            //        {
+            //            if (itemImg["info"].HasChild("sample")) {
+            //                WZCanvasProperty test = (WZCanvasProperty)itemImg["info"]["sample"];
+            //                Bitmap dmgSkinPng = test.Value;
+            //                dmgSkinPng.Save($@"F:\Bots\workspace\dmgskin\{itemId}.png", ImageFormat.Png);
+            //                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
+            //                count++;
+            //            }
+            //        }
+            //    }
+            //}
+            //Console.WriteLine("Count: " + count.ToString());
+            //Console.WriteLine("test");
+            //Console.ReadKey();
         }
     }
 }
