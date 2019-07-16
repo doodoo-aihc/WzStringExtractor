@@ -11,6 +11,8 @@ using MapleLib.WzLib.Util;
 using MapleLib.WzLib.WzProperties;
 using reWZ;
 using reWZ.WZProperties;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace WzStringExtractor
 {
@@ -18,42 +20,35 @@ namespace WzStringExtractor
     {
         static void Main(string[] args)
         {
-            WZFile xz = new WZFile(@"D:\Program Files (x86)\MapleStorySEA\String.wz", WZVariant.Classic, true, WZReadSelection.EagerParseStrings);
-            WZObject consume = (WZObject)xz.MainDirectory["Consume.img"];
+            Console.WriteLine("Enter your mode");
+            Console.WriteLine("1. Extract Damage Skin strings");
+            Console.WriteLine("2. Extract Damage Skin img");
+            int mode = Convert.ToInt32(Console.ReadLine());
 
-            foreach (var item in consume)
+            switch (mode)
             {
-                foreach (var test in item)
-                {
-                    if (test.Name == "name")
-                    {
-                        if (test.ValueOrDie<String>().Contains("Damage Skin"))
-                        {
-                            Console.WriteLine(test.ValueOrDie<String>());
-                            Console.WriteLine(item.Name);
-                        }
-                    }
-                }
+                case 1:
+                    ExtractString extractString = new ExtractString();
+                    break;
+
+                case 2:
+                    ExtractImg extractImg = new ExtractImg();
+                    break;
+
+                default:
+                    break;
             }
-
-            //WZStringProperty property = xz.ResolvePath("Consume.img/2000002/name").ValueOrDie<WZStringProperty>();
-            //Console.Write(property);
-            //WzFile file = new WzFile($@"D:\Program Files (x86)\MapleStorySEA\String.wz", 187, WzMapleVersion.CLASSIC);
-            //file.ParseWzFile();
-
-            ////file.WzDirectory.ParseImages();
-
-            //foreach (var item in file.WzDirectory.WzImages)
-            //{
-            //    //item.ParseImage(true);
-            //    WzObject test = file.GetObjectFromPath("Consume.img");
-            //    Console.WriteLine(item.Name);
-            //}
-
-
-            ////var test = file.GetObjectFromPath("Consume.img");
-            Console.Write("test");
-            Console.ReadKey();
         }
+    }
+
+    class DamageSkins
+    {
+        public List<DamageSkin> damageSkins { get; set; }
+    }
+
+    class DamageSkin
+    {
+        public string itemId { get; set; }
+        public string itemName { get; set; }
     }
 }
