@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 
 namespace WzStringExtractor
 {
@@ -46,6 +47,10 @@ namespace WzStringExtractor
             //    }
             //}
 
+            string fileName;
+            OpenFileDialog fd = new OpenFileDialog();
+            fd.ShowDialog();
+            fileName = fd.FileName;
             WZFile xz = new WZFile(@"F:\MapleStorySEA\Item.wz", WZVariant.MSEA, false);
             WZImage dmgSkinImg = (WZImage)xz.MainDirectory["Consume"]["0243.img"];
             WZImage dmgSkinImg2 = (WZImage)xz.MainDirectory["Consume"]["0263.img"];
