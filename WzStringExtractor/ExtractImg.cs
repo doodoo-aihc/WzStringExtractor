@@ -21,10 +21,10 @@ namespace WzStringExtractor
 {
     class ExtractImg
     {
-        public ExtractImg()
+        public ExtractImg(string fileName, string location, string jsonLocation)
         {
             int count = 0;
-            var dmgSkins = JsonConvert.DeserializeObject<List<DamageSkin>>(File.ReadAllText(@"F:\Bots\workspace\187MSEA_DmgSkin.json"));
+            var dmgSkins = JsonConvert.DeserializeObject<List<DamageSkin>>(File.ReadAllText(jsonLocation));
 
             //WzFile f = new WzFile(@"F:\MapleStorySEA\Item.wz", WzMapleVersion.CLASSIC);
             //f.ParseWzFile();
@@ -47,60 +47,22 @@ namespace WzStringExtractor
             //    }
             //}
 
-            string fileName;
-            OpenFileDialog fd = new OpenFileDialog();
-            fd.ShowDialog();
-            fileName = fd.FileName;
-            WZFile xz = new WZFile(@"F:\MapleStorySEA\Item.wz", WZVariant.MSEA, false);
+            WZFile xz = new WZFile(fileName, WZVariant.MSEA, false);
             WZImage dmgSkinImg = (WZImage)xz.MainDirectory["Consume"]["0243.img"];
-            WZImage dmgSkinImg2 = (WZImage)xz.MainDirectory["Consume"]["0263.img"];
+            //WZImage dmgSkinImg2 = (WZImage)xz.MainDirectory["Consume"]["0263.img"];
 
-            //foreach (var itemImg in dmgSkinImg)
-            //{
-            //    foreach (var jsonDmg in dmgSkins)
-            //    {
-            //        //Console.Write("debug");
-            //        string itemId = "0" + jsonDmg.itemId;
-            //        if (itemImg.Name == itemId)
-            //        {
-            //            if (itemImg["info"].HasChild("sample"))
-            //            {
-            //                Bitmap dmgSkinPng = null;
-            //                WZCanvasProperty test = (WZCanvasProperty)itemImg["info"]["sample"];
-            //                if (test.HasChild("_outlink"))
-            //                {
-            //                    string path = test["_outlink"].ValueOrDie<string>();
-            //                    path = path.Substring(path.IndexOf('/') + 1);
-            //                    dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
-            //                } else if (test.HasChild("_inlink"))
-            //                {
-            //                    string path = test["_inlink"].ValueOrDie<string>();
-            //                    string[] pathList = path.Split('/');
-            //                    dmgSkinPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
-            //                } else
-            //                {
-            //                    dmgSkinPng = test.Value;
-            //                }
-            //                dmgSkinPng.Save($@"F:\Bots\workspace\dmgskin\{itemId}.png", ImageFormat.Png);
-            //                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
-            //                count++;
-            //            }
-            //        }
-            //    }
-            //}
-
-            foreach (var itemImg2 in dmgSkinImg2)
+            foreach (var itemImg in dmgSkinImg)
             {
                 foreach (var jsonDmg in dmgSkins)
                 {
                     //Console.Write("debug");
                     string itemId = "0" + jsonDmg.itemId;
-                    if (itemImg2.Name == itemId)
+                    if (itemImg.Name == itemId)
                     {
-                        if (itemImg2["info"].HasChild("sample"))
+                        if (itemImg["info"].HasChild("sample"))
                         {
                             Bitmap dmgSkinPng = null;
-                            WZCanvasProperty test = (WZCanvasProperty)itemImg2["info"]["sample"];
+                            WZCanvasProperty test = (WZCanvasProperty)itemImg["info"]["sample"];
                             if (test.HasChild("_outlink"))
                             {
                                 string path = test["_outlink"].ValueOrDie<string>();
@@ -111,27 +73,64 @@ namespace WzStringExtractor
                             {
                                 string path = test["_inlink"].ValueOrDie<string>();
                                 string[] pathList = path.Split('/');
-                                if (path.Contains("2630086"))
-                                {
-                                    dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]][pathList[3]].ValueOrDie<Bitmap>();
-                                } else
-                                {
-                                    dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
-                                }
+                                dmgSkinPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
                             }
                             else
                             {
                                 dmgSkinPng = test.Value;
                             }
-                            dmgSkinPng.Save($@"F:\Bots\workspace\newdmgskin\{itemId}.png", ImageFormat.Png);
+                            dmgSkinPng.Save($@"{location}\{itemId}.png", ImageFormat.Png);
                             Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
                             count++;
                         }
                     }
                 }
             }
-            Console.WriteLine("Count: " + count.ToString());
-            Console.WriteLine("test");
+
+            //foreach (var itemImg2 in dmgSkinImg2)
+            //{
+            //    foreach (var jsonDmg in dmgSkins)
+            //    {
+            //        //Console.Write("debug");
+            //        string itemId = "0" + jsonDmg.itemId;
+            //        if (itemImg2.Name == itemId)
+            //        {
+            //            if (itemImg2["info"].HasChild("sample"))
+            //            {
+            //                Bitmap dmgSkinPng = null;
+            //                WZCanvasProperty test = (WZCanvasProperty)itemImg2["info"]["sample"];
+            //                if (test.HasChild("_outlink"))
+            //                {
+            //                    string path = test["_outlink"].ValueOrDie<string>();
+            //                    path = path.Substring(path.IndexOf('/') + 1);
+            //                    dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+            //                }
+            //                else if (test.HasChild("_inlink"))
+            //                {
+            //                    string path = test["_inlink"].ValueOrDie<string>();
+            //                    string[] pathList = path.Split('/');
+            //                    if (path.Contains("2630086"))
+            //                    {
+            //                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]][pathList[3]].ValueOrDie<Bitmap>();
+            //                    } else
+            //                    {
+            //                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    dmgSkinPng = test.Value;
+            //                }
+            //                dmgSkinPng.Save($@"F:{location}\{itemId}.png", ImageFormat.Png);
+            //                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
+            //                count++;
+            //            }
+            //        }
+            //    }
+
+            //}
+
+            Console.WriteLine($"Successfully dumped {count.ToString()} number of damage skins");
             Console.ReadKey();
         }
     }

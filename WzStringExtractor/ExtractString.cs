@@ -18,9 +18,10 @@ namespace WzStringExtractor
 {
     class ExtractString
     {
-        public ExtractString()
+        public ExtractString(string fileName, string output)
         {
-            WZFile xz = new WZFile(@"F:\MapleStorySEA\String.wz", WZVariant.Classic, true, WZReadSelection.EagerParseStrings);
+
+            WZFile xz = new WZFile(fileName, WZVariant.Classic, true, WZReadSelection.EagerParseStrings);
             WZObject consume = xz.MainDirectory["Consume.img"];
 
             StringBuilder sb = new StringBuilder();
@@ -69,7 +70,7 @@ namespace WzStringExtractor
 
 
             ////var test = file.GetObjectFromPath("Consume.img");
-            File.WriteAllText(@"F:\Bots\workspace\187MSEA_DmgSkin.json", sb.ToString());
+            File.WriteAllText(output, sb.ToString());
             Console.Write("done");
             Console.ReadKey();
         }

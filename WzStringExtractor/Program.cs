@@ -13,6 +13,7 @@ using reWZ;
 using reWZ.WZProperties;
 using Newtonsoft.Json;
 using System.IO;
+using System.Windows.Forms;
 
 namespace WzStringExtractor
 {
@@ -24,16 +25,40 @@ namespace WzStringExtractor
             Console.WriteLine("Enter your mode");
             Console.WriteLine("1. Extract Damage Skin strings");
             Console.WriteLine("2. Extract Damage Skin img");
+            Console.WriteLine("Please input only 1 or 2");
             int mode = Convert.ToInt32(Console.ReadLine());
+            string fileName;
+            string outputName;
+            string location;
+            string jsonFile;
+            OpenFileDialog fd = new OpenFileDialog();
+            SaveFileDialog output = new SaveFileDialog();
+            FolderBrowserDialog dmgSkinsLocation = new FolderBrowserDialog();
+
+            output.Title = "Save location for JSON";
+            output.DefaultExt = ".json";
+            output.AddExtension = true;
+
+            dmgSkinsLocation.Description = "Location for extraction";
 
             switch (mode)
             {
                 case 1:
-                    ExtractString extractString = new ExtractString();
+                    fd.ShowDialog();
+                    output.ShowDialog();
+                    fileName = fd.FileName;
+                    outputName = output.FileName;
+                    ExtractString extractString = new ExtractString(fileName, outputName);
                     break;
 
                 case 2:
-                    ExtractImg extractImg = new ExtractImg();
+                    fd.ShowDialog();
+                    dmgSkinsLocation.ShowDialog();
+                    fileName = fd.FileName;
+                    location = dmgSkinsLocation.SelectedPath;
+                    fd.ShowDialog();
+                    jsonFile = fd.FileName;
+                    ExtractImg extractImg = new ExtractImg(fileName, location, jsonFile);
                     break;
 
                 default:
