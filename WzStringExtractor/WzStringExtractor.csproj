@@ -53,9 +53,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MapleLib">
-      <HintPath>.\MapleLib.dll</HintPath>
-    </Reference>
     <Reference Include="NAudio">
       <HintPath>.\NAudio.dll</HintPath>
     </Reference>
