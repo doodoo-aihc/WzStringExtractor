@@ -25,7 +25,8 @@ namespace WzStringExtractor
             Console.WriteLine("Enter your mode");
             Console.WriteLine("1. Extract Damage Skin strings");
             Console.WriteLine("2. Extract Damage Skin img");
-            Console.WriteLine("Please input only 1 or 2");
+            Console.WriteLine("3. Extract Damage Skin Numbers");
+            Console.WriteLine("Please input only 1, 2 or 3");
             int mode = Convert.ToInt32(Console.ReadLine());
             string fileName;
             string outputName;
@@ -59,6 +60,14 @@ namespace WzStringExtractor
                     fd.ShowDialog();
                     jsonFile = fd.FileName;
                     ExtractImg extractImg = new ExtractImg(fileName, location, jsonFile);
+                    break;
+
+                case 3:
+                    fd.ShowDialog();
+                    dmgSkinsLocation.ShowDialog();
+                    fileName = fd.FileName;
+                    location = dmgSkinsLocation.SelectedPath;
+                    ExtractDamageSkinNumbers extractDamageSkinNumbers= new ExtractDamageSkinNumbers(fileName, location);
                     break;
 
                 default:
