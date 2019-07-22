@@ -26,71 +26,100 @@ namespace WzStringExtractor
             foreach (var numberType in damageSkinNumberImg)
             {
                 Bitmap dmgSkinNumberPng = null;
-                if (numberType.HasChild("ItemID"))
+                foreach (var numberImg in numberType)
                 {
-                    Console.WriteLine("hi");
-                    foreach (var numberImg in numberType)
+                    foreach (var number in numberImg)
                     {
-                        foreach (var number in numberImg)
+                        if (!(number is WZCanvasProperty))
                         {
-                            if (!(number is WZCanvasProperty))
-                            {
-                                break;
-                            }
-
-                            WZCanvasProperty test = (WZCanvasProperty)number;
-                            string[] pathNames = number.Path.Split('/');
-                            int itemId = numberType["ItemID"].ValueOrDefault<Int32>(Int32.Parse(pathNames[3]));
-
-
-                            if (number.HasChild("_inlink"))
-                            {
-                                string path = number["_inlink"].ValueOrDie<string>();
-                                dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
-                                
-                            }
-                            else
-                            {
-                                dmgSkinNumberPng = test.Value;
-                            }
-
-                            Directory.CreateDirectory($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}");
-                            dmgSkinNumberPng.Save($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
-                            Console.WriteLine("Exported damage skin");
+                            break;
                         }
+
+                        WZCanvasProperty test = (WZCanvasProperty)number;
+                        string[] pathNames = number.Path.Split('/');
+
+                        if (numberType["NoRed0"]["5"].HasChild("_inlink"))
+                        {
+                            break;
+                            //string path = numberType["NoCri1"]["5"]["_inlink"].ValueOrDie<string>();
+                            //dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
+
+                        }
+                        else
+                        {
+                            dmgSkinNumberPng = numberType["NoRed0"]["5"].ValueOrDie<Bitmap>();
+                        }
+
+                        //Directory.CreateDirectory($@"{outputLocation}\");
+                        dmgSkinNumberPng.Save($@"{outputLocation}\{numberType.Name}.png", ImageFormat.Png);
+                        Console.WriteLine($"Exported damage skin - {pathNames[3]}");
                     }
                 }
-                else
-                {
-                    foreach (var numberImg in numberType)
-                    {
-                        foreach (var number in numberImg)
-                        {
-                            if (!(number is WZCanvasProperty))
-                            {
-                                break;
-                            }
+                //if (numberType.HasChild("ItemID"))
+                //{
+                //    Console.WriteLine("hi");
+                //    foreach (var numberImg in numberType)
+                //    {
+                //        foreach (var number in numberImg)
+                //        {
+                //            if (!(number is WZCanvasProperty))
+                //            {
+                //                break;
+                //            }
 
-                            WZCanvasProperty test = (WZCanvasProperty)number;
-                            string[] pathNames = number.Path.Split('/');
+                //            WZCanvasProperty test = (WZCanvasProperty)number;
+                //            string[] pathNames = number.Path.Split('/');
+                //            int itemId = numberType["ItemID"].ValueOrDefault<Int32>(Int32.Parse(pathNames[3]));
 
-                            if (number.HasChild("_inlink"))
-                            {
-                                string path = number["_inlink"].ValueOrDie<string>();
-                                dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
 
-                            }
-                            else
-                            {
-                                dmgSkinNumberPng = test.Value;
-                            }
+                //            if (number.HasChild("_inlink"))
+                //            {
+                //                string path = number["_inlink"].ValueOrDie<string>();
+                //                dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
 
-                            Directory.CreateDirectory($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}");
-                            dmgSkinNumberPng.Save($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
-                            Console.WriteLine($"Exported damage skin - {pathNames[3]}");
-                        }
-                    }
-                }
+                //            }
+                //            else
+                //            {
+                //                dmgSkinNumberPng = test.Value;
+                //            }
+
+                //            Directory.CreateDirectory($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}");
+                //            dmgSkinNumberPng.Save($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
+                //            Console.WriteLine("Exported damage skin");
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    foreach (var numberImg in numberType)
+                //    {
+                //        foreach (var number in numberImg)
+                //        {
+                //            if (!(number is WZCanvasProperty))
+                //            {
+                //                break;
+                //            }
+
+                //            WZCanvasProperty test = (WZCanvasProperty)number;
+                //            string[] pathNames = number.Path.Split('/');
+
+                //            if (number.HasChild("_inlink"))
+                //            {
+                //                string path = number["_inlink"].ValueOrDie<string>();
+                //                dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
+
+                //            }
+                //            else
+                //            {
+                //                dmgSkinNumberPng = test.Value;
+                //            }
+
+                //            Directory.CreateDirectory($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}");
+                //            dmgSkinNumberPng.Save($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
+                //            Console.WriteLine($"Exported damage skin - {pathNames[3]}");
+                //        }
+                //    }
+                //}
                 count++;
             }
             Console.WriteLine($"Successfully dumped {count.ToString()} number of damage skins");
