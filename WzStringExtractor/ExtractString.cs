@@ -20,6 +20,9 @@ namespace WzStringExtractor
 
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);
+            HashSet<string> listOfDamageSkins = new HashSet<string>();
+
+            string[] exceptions = new string[] { "30", "Protected", "Permanent" };
 
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
@@ -32,14 +35,32 @@ namespace WzStringExtractor
                     {
                         if (test.Name == "name")
                         {
-                            if (test.ValueOrDie<String>().Contains("Damage Skin"))
+                            if (test.ValueOrDie<String>().Contains("Damage Skin -"))
                             {
-                                writer.WriteStartObject();
-                                writer.WritePropertyName("itemId");
-                                writer.WriteValue(item.Name);
-                                writer.WritePropertyName("itemName");
-                                writer.WriteValue(test.ValueOrDie<String>());
-                                writer.WriteEndObject();
+                                string damageSkin = test.ValueOrDie<string>();
+                                if (exceptions.Any(damageSkin.Contains))
+                                {
+                                    break;
+                                }
+
+                                string[] split = damageSkin.Split('-');
+                                string actualString = split[1].Trim();
+                                Console.WriteLine(actualString);
+                                if (listOfDamageSkins.Contains(actualString))
+                                {
+                                    Console.WriteLine(actualString + " is already in the list");
+                                    break;
+                                } else
+                                {
+                                    listOfDamageSkins.Add(actualString);
+                                    writer.WriteStartObject();
+                                    writer.WritePropertyName("itemId");
+                                    writer.WriteValue(item.Name);
+                                    writer.WritePropertyName("itemName");
+                                    writer.WriteValue(actualString);
+                                    writer.WriteEndObject();
+                                    Console.WriteLine(actualString);
+                                }
                                 //Console.WriteLine(test.ValueOrDie<String>());
                                 //Console.WriteLine(item.Name);
                             }

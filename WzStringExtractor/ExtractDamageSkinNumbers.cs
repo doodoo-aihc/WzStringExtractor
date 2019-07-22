@@ -57,7 +57,6 @@ namespace WzStringExtractor
                             Directory.CreateDirectory($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}");
                             dmgSkinNumberPng.Save($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
                             Console.WriteLine("Exported damage skin");
-                            count++;
                         }
                     }
                 }
@@ -89,10 +88,10 @@ namespace WzStringExtractor
                             Directory.CreateDirectory($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}");
                             dmgSkinNumberPng.Save($@"{outputLocation}\{pathNames[3]}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
                             Console.WriteLine($"Exported damage skin - {pathNames[3]}");
-                            count++;
                         }
                     }
                 }
+                count++;
             }
             Console.WriteLine($"Successfully dumped {count.ToString()} number of damage skins");
             Console.ReadKey();
