@@ -37,6 +37,12 @@ namespace WzStringExtractor
 
                         WZCanvasProperty test = (WZCanvasProperty)number;
                         string[] pathNames = number.Path.Split('/');
+                        int itemId = 0;
+
+                        if (numberType.HasChild("ItemID"))
+                        {
+                            itemId = numberType["ItemID"].ValueOrDefault<Int32>(Int32.Parse(pathNames[3]));
+                        }
 
                         if (numberType["NoRed0"]["5"].HasChild("_inlink"))
                         {
@@ -45,16 +51,26 @@ namespace WzStringExtractor
                             //dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
 
                         }
+
                         else
                         {
                             dmgSkinNumberPng = numberType["NoRed0"]["5"].ValueOrDie<Bitmap>();
                         }
 
                         //Directory.CreateDirectory($@"{outputLocation}\");
-                        dmgSkinNumberPng.Save($@"{outputLocation}\{numberType.Name}.png", ImageFormat.Png);
+                        if (numberType.HasChild("ItemID"))
+                        {
+                            dmgSkinNumberPng.Save($@"{outputLocation}\{numberType.Name}_{itemId}.png", ImageFormat.Png);
+                        }
+                        else
+                        {
+                            dmgSkinNumberPng.Save($@"{outputLocation}\{numberType.Name}.png", ImageFormat.Png);
+
+                        }
                         Console.WriteLine($"Exported damage skin - {pathNames[3]}");
                     }
                 }
+
                 //if (numberType.HasChild("ItemID"))
                 //{
                 //    Console.WriteLine("hi");
@@ -74,6 +90,7 @@ namespace WzStringExtractor
 
                 //            if (number.HasChild("_inlink"))
                 //            {
+                //                break;
                 //                string path = number["_inlink"].ValueOrDie<string>();
                 //                dmgSkinNumberPng = xz.ResolvePath($"BasicEff.img/{path}").ValueOrDie<Bitmap>();
 
