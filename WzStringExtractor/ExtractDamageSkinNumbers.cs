@@ -100,8 +100,8 @@ namespace WzStringExtractor
                                 dmgSkinNumberPng = test.Value;
                             }
 
-                            Directory.CreateDirectory($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}");
-                            dmgSkinNumberPng.Save($@"{outputLocation}\{itemId.ToString()}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
+                            Directory.CreateDirectory($@"{outputLocation}\{pathNames[3]}_{itemId.ToString()}\{pathNames[4]}");
+                            dmgSkinNumberPng.Save($@"{outputLocation}\{pathNames[3]}_{itemId.ToString()}\{pathNames[4]}\{pathNames[5]}.png", ImageFormat.Png);
                             Console.WriteLine("Exported damage skin");
                         }
                     }
