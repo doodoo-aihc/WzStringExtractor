@@ -15,35 +15,17 @@ namespace WzStringExtractor
 {
     class ExtractImg
     {
-        public ExtractImg(string fileName, string location, string jsonLocation)
+        public ExtractImg(string fileName, string location, string jsonLocation, string iconLocation)
         {
             int count = 0;
             var dmgSkins = JsonConvert.DeserializeObject<List<DamageSkin>>(File.ReadAllText(jsonLocation));
 
-            //WzFile f = new WzFile(@"F:\MapleStorySEA\Item.wz", WzMapleVersion.CLASSIC);
-            //f.ParseWzFile();
-            ////f.GetObjectsFromRegexPath("Consume/0243.img")
-            //WzDirectory dmgSkinDir = (WzDirectory)f.WzDirectory.WzDirectories.FirstOrDefault(x => x.Name == "Consume");
-            //WzImage dmgSkinImg = dmgSkinDir.WzImages.FirstOrDefault(x => x.Name == "0243.img");
-
-            //foreach (var item in dmgSkinImg.WzProperties)
-            //{
-            //    foreach (var jsonDmg in dmgSkins)
-            //    {
-            //        string itemId = "0" + jsonDmg.itemId;
-            //        if (item.Name == itemId)
-            //        {
-            //            Bitmap test = item.WzProperties.FirstOrDefault(x => x.Name == "info").WzProperties.FirstOrDefault(x => x.Name == "sample").GetBitmap();
-            //            test.Save($@"F:\Bots\workspace\dmgskin\{itemId}.png", ImageFormat.Png);
-            //            Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
-            //            Console.Write("test");
-            //        }
-            //    }
-            //}
+            Directory.CreateDirectory(location);
+            Directory.CreateDirectory(iconLocation);
 
             WZFile xz = new WZFile(fileName, WZVariant.MSEA, false);
             WZImage dmgSkinImg = (WZImage)xz.MainDirectory["Consume"]["0243.img"];
-            //WZImage dmgSkinImg2 = (WZImage)xz.MainDirectory["Consume"]["0263.img"];
+            WZImage dmgSkinImg2 = (WZImage)xz.MainDirectory["Consume"]["0263.img"];
 
             foreach (var itemImg in dmgSkinImg)
             {
@@ -51,78 +33,151 @@ namespace WzStringExtractor
                 {
                     //Console.Write("debug");
                     string itemId = "0" + jsonDmg.itemId;
-                    if (itemImg.Name == itemId)
+
+                    if (itemId.StartsWith("0243"))
                     {
-                        if (itemImg["info"].HasChild("sample"))
+                        if (itemImg.Name == itemId)
                         {
-                            Bitmap dmgSkinPng = null;
-                            WZCanvasProperty test = (WZCanvasProperty)itemImg["info"]["sample"];
-                            if (test.HasChild("_outlink"))
+                            if (itemImg["info"].HasChild("sample"))
                             {
-                                string path = test["_outlink"].ValueOrDie<string>();
-                                path = path.Substring(path.IndexOf('/') + 1);
-                                dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                                Bitmap dmgSkinPng = null;
+                                Bitmap dmgSkinIconPng = null;
+                                WZCanvasProperty iconTest = null;
+                                WZCanvasProperty test = (WZCanvasProperty)itemImg["info"]["sample"];
+
+                                if (itemImg["info"].HasChild("icon"))
+                                {
+                                    if (itemImg["info"]["icon"].Type == WZObjectType.UOL)
+                                    {
+                                        iconTest = (WZCanvasProperty)itemImg["info"]["iconRaw"];
+                                    } else
+                                    {
+                                        iconTest = (WZCanvasProperty)itemImg["info"]["icon"];
+                                    }
+
+                                    if (iconTest.HasChild("_outlink"))
+                                    {
+                                        string path = iconTest["_outlink"].ValueOrDie<string>();
+                                        path = path.Substring(path.IndexOf('/') + 1);
+                                        dmgSkinIconPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                                    }
+                                    else if (iconTest.HasChild("_inlink"))
+                                    {
+                                        string path = iconTest["_inlink"].ValueOrDie<string>();
+                                        string[] pathList = path.Split('/');
+                                        dmgSkinIconPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
+                                    }
+                                    else
+                                    {
+                                        dmgSkinIconPng = iconTest.Value;
+                                    }
+                                }
+                                // Damage Skin Section
+                                if (test.HasChild("_outlink"))
+                                {
+                                    string path = test["_outlink"].ValueOrDie<string>();
+                                    path = path.Substring(path.IndexOf('/') + 1);
+                                    dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                                }
+                                else if (test.HasChild("_inlink"))
+                                {
+                                    string path = test["_inlink"].ValueOrDie<string>();
+                                    string[] pathList = path.Split('/');
+                                    dmgSkinPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
+                                }
+                                else
+                                {
+                                    dmgSkinPng = test.Value;
+                                }
+                                dmgSkinPng.Save($@"{location}\{itemId}.png", ImageFormat.Png);
+                                dmgSkinIconPng.Save($@"{iconLocation}\{itemId}.png", ImageFormat.Png);
+                                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
+                                count++;
                             }
-                            else if (test.HasChild("_inlink"))
-                            {
-                                string path = test["_inlink"].ValueOrDie<string>();
-                                string[] pathList = path.Split('/');
-                                dmgSkinPng = dmgSkinImg[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
-                            }
-                            else
-                            {
-                                dmgSkinPng = test.Value;
-                            }
-                            dmgSkinPng.Save($@"{location}\{itemId}.png", ImageFormat.Png);
-                            Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
-                            count++;
                         }
                     }
                 }
             }
 
-            //foreach (var itemImg2 in dmgSkinImg2)
-            //{
-            //    foreach (var jsonDmg in dmgSkins)
-            //    {
-            //        //Console.Write("debug");
-            //        string itemId = "0" + jsonDmg.itemId;
-            //        if (itemImg2.Name == itemId)
-            //        {
-            //            if (itemImg2["info"].HasChild("sample"))
-            //            {
-            //                Bitmap dmgSkinPng = null;
-            //                WZCanvasProperty test = (WZCanvasProperty)itemImg2["info"]["sample"];
-            //                if (test.HasChild("_outlink"))
-            //                {
-            //                    string path = test["_outlink"].ValueOrDie<string>();
-            //                    path = path.Substring(path.IndexOf('/') + 1);
-            //                    dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
-            //                }
-            //                else if (test.HasChild("_inlink"))
-            //                {
-            //                    string path = test["_inlink"].ValueOrDie<string>();
-            //                    string[] pathList = path.Split('/');
-            //                    if (path.Contains("2630086"))
-            //                    {
-            //                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]][pathList[3]].ValueOrDie<Bitmap>();
-            //                    } else
-            //                    {
-            //                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    dmgSkinPng = test.Value;
-            //                }
-            //                dmgSkinPng.Save($@"F:{location}\{itemId}.png", ImageFormat.Png);
-            //                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
-            //                count++;
-            //            }
-            //        }
-            //    }
+            foreach (var itemImg2 in dmgSkinImg2)
+            {
+                foreach (var jsonDmg in dmgSkins)
+                {
+                    //Console.Write("debug");
+                    string itemId = "0" + jsonDmg.itemId;
+                    if (itemId.StartsWith("0263"))
+                    {
+                        if (itemImg2.Name == itemId)
+                        {
+                            if (itemImg2["info"].HasChild("sample"))
+                            {
+                                Bitmap dmgSkinPng = null;
+                                Bitmap dmgSkinIconPng = null;
+                                WZCanvasProperty iconTest = null;
+                                WZCanvasProperty test = (WZCanvasProperty)itemImg2["info"]["sample"];
 
-            //}
+                                if (itemImg2["info"].HasChild("icon"))
+                                {
+                                    if (itemImg2["info"]["icon"].Type == WZObjectType.UOL)
+                                    {
+                                        iconTest = (WZCanvasProperty)itemImg2["info"]["iconRaw"];
+                                    }
+                                    else
+                                    {
+                                        iconTest = (WZCanvasProperty)itemImg2["info"]["icon"];
+                                    }
+
+                                    if (iconTest.HasChild("_outlink"))
+                                    {
+                                        string path = iconTest["_outlink"].ValueOrDie<string>();
+                                        path = path.Substring(path.IndexOf('/') + 1);
+                                        dmgSkinIconPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                                    }
+                                    else if (iconTest.HasChild("_inlink"))
+                                    {
+                                        string path = iconTest["_inlink"].ValueOrDie<string>();
+                                        string[] pathList = path.Split('/');
+                                        dmgSkinIconPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
+                                    }
+                                    else
+                                    {
+                                        dmgSkinIconPng = iconTest.Value;
+                                    }
+                                }
+                                // damage skin
+                                if (test.HasChild("_outlink"))
+                                {
+                                    string path = test["_outlink"].ValueOrDie<string>();
+                                    path = path.Substring(path.IndexOf('/') + 1);
+                                    dmgSkinPng = xz.ResolvePath(path).ValueOrDie<Bitmap>();
+                                }
+                                else if (test.HasChild("_inlink"))
+                                {
+                                    string path = test["_inlink"].ValueOrDie<string>();
+                                    string[] pathList = path.Split('/');
+                                    if (path.Contains("2630086"))
+                                    {
+                                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]][pathList[3]].ValueOrDie<Bitmap>();
+                                    }
+                                    else
+                                    {
+                                        dmgSkinPng = dmgSkinImg2[pathList[0]][pathList[1]][pathList[2]].ValueOrDie<Bitmap>();
+                                    }
+                                }
+                                else
+                                {
+                                    dmgSkinPng = test.Value;
+                                }
+                                dmgSkinIconPng = iconTest.Value;
+                                dmgSkinPng.Save($@"{location}\{itemId}.png", ImageFormat.Png);
+                                dmgSkinIconPng.Save($@"{iconLocation}\{itemId}.png", ImageFormat.Png);
+                                Console.WriteLine($"Dumped {jsonDmg.itemId} - {jsonDmg.itemName}");
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
 
             Console.WriteLine($"Successfully dumped {count.ToString()} number of damage skins");
             Console.ReadKey();

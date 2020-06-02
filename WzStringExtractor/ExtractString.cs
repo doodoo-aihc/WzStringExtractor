@@ -22,7 +22,7 @@ namespace WzStringExtractor
             StringWriter sw = new StringWriter(sb);
             HashSet<string> listOfDamageSkins = new HashSet<string>();
 
-            string[] exceptions = new string[] { "30", "Protected", "Permanent" };
+            string[] exceptions = new string[] { "30", "Protected", "Permanent", "Box", "Ticket" };
 
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
@@ -31,13 +31,13 @@ namespace WzStringExtractor
                 writer.WriteStartArray();
                 foreach (var item in consume)
                 {
-                    foreach (var test in item)
+                    foreach (var child in item)
                     {
-                        if (test.Name == "name")
+                        if (child.Name == "name")
                         {
-                            if (test.ValueOrDie<String>().Contains("Damage Skin -"))
+                            if (child.ValueOrDie<String>().Contains("Damage Skin -"))
                             {
-                                string damageSkin = test.ValueOrDie<string>();
+                                string damageSkin = child.ValueOrDie<string>();
                                 if (exceptions.Any(damageSkin.Contains))
                                 {
                                     break;
@@ -45,7 +45,7 @@ namespace WzStringExtractor
 
                                 string[] split = damageSkin.Split('-');
                                 string actualString = split[1].Trim();
-                                Console.WriteLine(actualString);
+
                                 if (listOfDamageSkins.Contains(actualString))
                                 {
                                     Console.WriteLine(actualString + " is already in the list");
@@ -57,35 +57,18 @@ namespace WzStringExtractor
                                     writer.WritePropertyName("itemId");
                                     writer.WriteValue(item.Name);
                                     writer.WritePropertyName("itemName");
-                                    writer.WriteValue(actualString);
+                                    writer.WriteValue(damageSkin);
                                     writer.WriteEndObject();
-                                    Console.WriteLine(actualString);
+                                    Console.WriteLine(damageSkin);
                                 }
-                                //Console.WriteLine(test.ValueOrDie<String>());
-                                //Console.WriteLine(item.Name);
                             }
                         }
                     }
                 }
                 writer.WriteEndArray();
             }
-            //WZStringProperty property = xz.ResolvePath("Consume.img/2000002/name").ValueOrDie<WZStringProperty>();
-            //Console.Write(property);
-            //WzFile file = new WzFile($@"D:\Program Files (x86)\MapleStorySEA\String.wz", 187, WzMapleVersion.CLASSIC);
-            //file.ParseWzFile();
-
-            ////file.WzDirectory.ParseImages();
-
-            //foreach (var item in file.WzDirectory.WzImages)
-            //{
-            //    //item.ParseImage(true);
-            //    WzObject test = file.GetObjectFromPath("Consume.img");
-            //    Console.WriteLine(item.Name);
-            //}
-
-
-            ////var test = file.GetObjectFromPath("Consume.img");
             File.WriteAllText(output, sb.ToString());
+            Console.WriteLine("Number of Damage Skins: " + listOfDamageSkins.Count);
             Console.Write("done");
             Console.ReadKey();
         }

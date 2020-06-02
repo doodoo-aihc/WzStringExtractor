@@ -24,17 +24,20 @@ namespace WzStringExtractor
             int mode = Convert.ToInt32(Console.ReadLine());
             string fileName;
             string outputName;
-            string location;
+            string location = "./DamageSkinImage";
             string jsonFile;
+            string iconLocation = "./DamageSkinIconImage";
             OpenFileDialog fd = new OpenFileDialog();
             SaveFileDialog output = new SaveFileDialog();
             FolderBrowserDialog dmgSkinsLocation = new FolderBrowserDialog();
+            FolderBrowserDialog dmgSkinsIconLocation = new FolderBrowserDialog();
 
             output.Title = "Save location for JSON";
             output.DefaultExt = ".json";
             output.AddExtension = true;
 
             dmgSkinsLocation.Description = "Location for extraction";
+            dmgSkinsIconLocation.Description = "Location for extraction of skin icon";
 
             switch (mode)
             {
@@ -47,13 +50,17 @@ namespace WzStringExtractor
                     break;
 
                 case 2:
+                    fd.Title = "Select Item.Wz";
                     fd.ShowDialog();
-                    dmgSkinsLocation.ShowDialog();
+                    //dmgSkinsLocation.ShowDialog();
+                    //dmgSkinsIconLocation.ShowDialog();
                     fileName = fd.FileName;
-                    location = dmgSkinsLocation.SelectedPath;
+                    //location = dmgSkinsLocation.SelectedPath;
+                    //iconLocation = dmgSkinsIconLocation.SelectedPath;
+                    fd.Title = "Select skin.json";
                     fd.ShowDialog();
                     jsonFile = fd.FileName;
-                    ExtractImg extractImg = new ExtractImg(fileName, location, jsonFile);
+                    ExtractImg extractImg = new ExtractImg(fileName, location, jsonFile, iconLocation);
                     break;
 
                 case 3:
